@@ -39,6 +39,15 @@ def book_list(request):
 
 
 @login_required
+def book_detail(request, pk):
+    book = get_object_or_404(Book.objects.select_related('author').prefetch_related('genres'), pk=pk)
+    return render(request, 'books/book_detail.html', {
+        'book': book,
+        'is_admin': _is_admin(request.user),
+    })
+
+
+@login_required
 def book_add(request):
     if not _is_admin(request.user):
         return HttpResponseForbidden()

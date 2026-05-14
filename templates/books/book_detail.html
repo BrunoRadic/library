@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ book.title }}</h1>
+
+{% if book.cover %}
+    <img src="{{ book.cover.url }}" alt="{{ book.title }} cover" style="max-width: 200px; margin-bottom: 16px; display: block;">
+{% endif %}
+
+<table style="width: auto; border: none;">
+    <tbody>
+        <tr>
+            <td style="font-weight: bold; padding: 6px 16px 6px 0; border: none;">Author</td>
+            <td style="border: none;">{{ book.author }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; padding: 6px 16px 6px 0; border: none;">Genres</td>
+            <td style="border: none;">
+                {% if book.genres.all %}
+                    {% for g in book.genres.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                {% else %}—{% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; padding: 6px 16px 6px 0; border: none;">Year</td>
+            <td style="border: none;">{{ book.year|default:"—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; padding: 6px 16px 6px 0; border: none;">Copies Available</td>
+            <td style="border: none;">{{ book.copies_available }}</td>
+        </tr>
+        {% if book.description %}
+        <tr>
+            <td style="font-weight: bold; padding: 6px 16px 6px 0; border: none; vertical-align: top;">Description</td>
+            <td style="border: none;">{{ book.description }}</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<div class="mt-16">
+    {% if is_admin %}
+        <a class="btn" href="{% url 'book_edit' book.pk %}">Edit</a>
+    {% endif %}
+    <a class="back-link" href="{% url 'book_list' %}">← Back to list</a>
+</div>
+{% endblock %}

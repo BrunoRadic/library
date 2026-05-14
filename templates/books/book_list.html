@@ -48,7 +48,7 @@
     <tbody>
         {% for book in books %}
         <tr>
-            <td>{{ book.title }}</td>
+            <td><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></td>
             <td>{{ book.author }}</td>
             <td>{% for g in book.genres.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
             <td>{{ book.year|default:"—" }}</td>
