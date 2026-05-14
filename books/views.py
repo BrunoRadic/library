@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -8,6 +9,10 @@ from .models import Author, Book, Genre
 
 def _is_admin(user):
     return user.groups.filter(name='administrator').exists()
+
+
+def _is_employee(user):
+    return user.groups.filter(name='employee').exists()
 
 
 @login_required
@@ -58,3 +63,33 @@ def book_edit(request, pk):
         return redirect('book_list')
 
     return render(request, 'books/book_form.html', {'form': form, 'book': book})
+
+
+@login_required
+def stats_view(request):
+    if not _is_employee(request.user):
+        return HttpResponseForbidden()
+
+    total_books = Book.objects.count()
+    total_authors = Author.objects.count()
+    books_per_genre = (
+        Genre.objects.annotate(book_count=Count('book'))
+        .order_by('-book_count')
+    )
+    top_author = (
+        Author.objects.annotate(book_count=Count('book'))
+        .order_by('-book_count')
+        .first()
+    )
+    recent_books = (
+        Book.objects.select_related('author')
+        .order_by('-id')[:5]
+    )
+
+    return render(request, 'books/stats.html', {
+        'total_books': total_books,
+        'total_authors': total_authors,
+        'books_per_genre': books_per_genre,
+        'top_author': top_author,
+        'recent_books': recent_books,
+    })

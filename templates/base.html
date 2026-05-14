@@ -11,13 +11,14 @@
         <a class="nav-brand" href="{% url 'book_list' %}">Library</a>
         <div class="nav-links">
             {% if user.is_authenticated %}
-                {% if user.groups.all|length > 0 %}
-                    {% for group in user.groups.all %}
-                        {% if group.name == 'administrator' %}
-                            <a href="{% url 'book_add' %}">Add Book</a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                {% for group in user.groups.all %}
+                    {% if group.name == 'administrator' %}
+                        <a href="{% url 'book_add' %}">Add Book</a>
+                    {% endif %}
+                    {% if group.name == 'employee' %}
+                        <a href="{% url 'stats' %}">Statistics</a>
+                    {% endif %}
+                {% endfor %}
                 <span>Welcome, {{ user.username }}</span>
                 <a href="{% url 'logout' %}">Logout</a>
             {% endif %}
