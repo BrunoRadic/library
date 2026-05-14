@@ -1,7 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import BookForm
 from .models import Author, Book, Genre
+
+
+def _is_admin(user):
+    return user.groups.filter(name='administrator').exists()
 
 
 @login_required
@@ -23,4 +29,32 @@ def book_list(request):
         'books': books,
         'authors': Author.objects.all(),
         'genres': Genre.objects.all(),
+        'is_admin': _is_admin(request.user),
     })
+
+
+@login_required
+def book_add(request):
+    if not _is_admin(request.user):
+        return HttpResponseForbidden()
+
+    form = BookForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('book_list')
+
+    return render(request, 'books/book_form.html', {'form': form, 'book': None})
+
+
+@login_required
+def book_edit(request, pk):
+    if not _is_admin(request.user):
+        return HttpResponseForbidden()
+
+    book = get_object_or_404(Book, pk=pk)
+    form = BookForm(request.POST or None, request.FILES or None, instance=book)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('book_list')
+
+    return render(request, 'books/book_form.html', {'form': form, 'book': book})

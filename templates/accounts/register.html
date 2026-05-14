@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-wrapper">
     <h1>Register</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Register</button>
     </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-</body>
-</html>
+    <p class="form-link">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+</div>
+{% endblock %}

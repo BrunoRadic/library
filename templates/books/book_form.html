@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% if book %}Edit Book{% else %}Add Book{% endif %}</h1>
+
+<div class="book-form">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+<a class="back-link" href="{% url 'book_list' %}">← Back to list</a>
+{% endblock %}
