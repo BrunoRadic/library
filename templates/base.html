@@ -14,8 +14,9 @@
                 {% for group in user.groups.all %}
                     {% if group.name == 'administrator' %}
                         <a href="{% url 'book_add' %}">Add Book</a>
+                        <a href="{% url 'user_list' %}">Users</a>
                     {% endif %}
-                    {% if group.name == 'employee' %}
+                    {% if group.name == 'employee' or group.name == 'administrator' %}
                         <a href="{% url 'stats' %}">Statistics</a>
                     {% endif %}
                 {% endfor %}

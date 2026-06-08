@@ -3,45 +3,34 @@
 {% block content %}
 <h1>Statistics</h1>
 
-<p><strong>Total books:</strong> {{ total_books }}</p>
-<p><strong>Total authors:</strong> {{ total_authors }}</p>
-<p><strong>Most prolific author:</strong> {{ top_author }} ({{ top_author.book_count }} books)</p>
-
-<h2>Books per Genre</h2>
 <table>
     <thead>
         <tr>
-            <th>Genre</th>
-            <th>Books</th>
+            <th>Metric</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
-        {% for genre in books_per_genre %}
         <tr>
-            <td>{{ genre.name }}</td>
-            <td>{{ genre.book_count }}</td>
+            <td>Total books</td>
+            <td>{{ total_books }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h2 class="mt-16">Recently Added Books</h2>
-<table>
-    <thead>
         <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Year</th>
+            <td>Total categories</td>
+            <td>{{ total_genres }}</td>
         </tr>
-    </thead>
-    <tbody>
-        {% for book in recent_books %}
         <tr>
-            <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
-            <td>{{ book.year|default:"—" }}</td>
+            <td>Total authors</td>
+            <td>{{ total_authors }}</td>
         </tr>
-        {% endfor %}
+        <tr>
+            <td>Registered users</td>
+            <td>{{ total_users }}</td>
+        </tr>
+        <tr>
+            <td>Most popular category</td>
+            <td>{{ top_genre.name }} ({{ top_genre.book_count }} books)</td>
+        </tr>
     </tbody>
 </table>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group, User
 from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -75,30 +76,38 @@ def book_edit(request, pk):
 
 
 @login_required
-def stats_view(request):
-    if not _is_employee(request.user):
+def user_list(request):
+    if not _is_admin(request.user):
         return HttpResponseForbidden()
 
-    total_books = Book.objects.count()
-    total_authors = Author.objects.count()
-    books_per_genre = (
+    role = request.GET.get('role', '').strip()
+    users = User.objects.prefetch_related('groups').order_by('username')
+
+    if role:
+        users = users.filter(groups__name=role)
+
+    return render(request, 'books/user_list.html', {
+        'users': users,
+        'groups': Group.objects.all(),
+        'selected_role': role,
+    })
+
+
+@login_required
+def stats_view(request):
+    if not (_is_admin(request.user) or _is_employee(request.user)):
+        return HttpResponseForbidden()
+
+    top_genre = (
         Genre.objects.annotate(book_count=Count('book'))
-        .order_by('-book_count')
-    )
-    top_author = (
-        Author.objects.annotate(book_count=Count('book'))
         .order_by('-book_count')
         .first()
     )
-    recent_books = (
-        Book.objects.select_related('author')
-        .order_by('-id')[:5]
-    )
 
     return render(request, 'books/stats.html', {
-        'total_books': total_books,
-        'total_authors': total_authors,
-        'books_per_genre': books_per_genre,
-        'top_author': top_author,
-        'recent_books': recent_books,
+        'total_books': Book.objects.count(),
+        'total_genres': Genre.objects.count(),
+        'total_authors': Author.objects.count(),
+        'total_users': User.objects.count(),
+        'top_genre': top_genre,
     })

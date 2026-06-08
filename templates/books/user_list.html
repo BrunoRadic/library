@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Users</h1>
+
+<form method="get">
+    <select name="role">
+        <option value="">   All roles   </option>
+        {% for group in groups %}
+            <option value="{{ group.name }}" {% if selected_role == group.name %}selected{% endif %}>
+                {{ group.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Pretraži po ulozi</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email|default:"—" }}</td>
+            <td>
+                {% for group in u.groups.all %}
+                    {{ group.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    —
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No users found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
